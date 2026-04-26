@@ -1,0 +1,64 @@
+https://karmada.io/
+SRE:    Implement RED/USE methodologies
+        Build error budgets + burn-rate alerts
+
+
+
+Deploy and compare CNIs:
+    Cilium
+    Calico
+
+Go deep into:
+
+    eBPF
+    Network policies
+    Service mesh vs native networking
+
+    Capture and debug packet flow
+    Simulate network partition issues
+
+Kyverno:
+    Build a threat model
+    Simulate container escape attack scenarios
+
+
+KEDA
+
+
+    Scale on queue length (Kafka, RabbitMQ)
+    Predictive scaling using historical metrics
+
+Chaos Mesh
+
+    Define resilience SLOs
+    Automate chaos experiments in CI/CD
+
+Kubecost
+
+    Auto-rightsize workloads
+    Spot instance 
+    
+You MUST implement:
+
+    Rollbacks
+    Canary deployments
+    Version upgrades
+    Incident visibility
+
+
+https://kyverno.io/docs/policy-types/overview/
+
+Use secrets, Configmap, 
+
+
+
+
+
+kubeadm join 192.168.56.10:6443 --token nf46ci.zu35f10f1kjq7dmg \
+	--discovery-token-ca-cert-hash sha256:8f3e87e795368b7c5daa8349623c76a964cd5c4b58c6ae1936d02a3274fd91dd 
+
+
+ On each worker node:                                                                                                                                                      
+   
+  kubeadm reset -f --cri-socket=unix:///run/containerd/containerd.sock                                                                                                      
+  rm -rf /etc/cni/net.d /var/lib/kubelet

@@ -1,0 +1,34 @@
+argo-cd:
+  # -- Install CRDs (keep true on first install)
+  crds:
+    install: true
+    keep: true
+
+  global:
+    # Reduce replica counts to fit the learning cluster resources
+    replicaCount: 1
+
+  server:
+    replicaCount: 1
+    # Expose ArgoCD UI via NodePort so it's reachable from your Mac
+    # Access at http://192.168.56.11:30080 (or whichever worker it lands on)
+    service:
+      type: NodePort
+      nodePortHttp: 30080
+      nodePortHttps: 30443
+
+  applicationSet:
+    replicaCount: 1
+
+  controller:
+    replicaCount: 1
+
+  redis:
+    enabled: true
+
+  dex:
+    # Disable SSO/dex for local dev — saves ~100Mi RAM
+    enabled: false
+
+  notifications:
+    enabled: false

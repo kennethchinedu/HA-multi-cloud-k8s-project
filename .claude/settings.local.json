@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/apple/Desktop/Dev/SRE-PROJECT/**)",
+      "Read(//Users/apple/Desktop/Dev/SRE-PROJECT/docs/**)"
+    ]
+  }
+}
