@@ -18,3 +18,13 @@ install-chaos-mesh:
 		--namespace chaos-mesh \
 		--create-namespace \
 		--values values.yaml
+
+
+install-policy-reporter:
+	helm repo add policy-reporter https://kyverno.github.io/policy-reporter && \
+	helm repo update && \
+	helm upgrade --install policy-reporter policy-reporter/policy-reporter \
+		--namespace policy-reporter \
+		--create-namespace \
+		--set kyvernoPlugin.enabled=true \
+		--set target.slack.minimumSeverity="medium"
