@@ -25,7 +25,8 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-.claude 
+.claude / 
+.claude.local.json
 CLAUDE.md
 
 # PyInstaller
