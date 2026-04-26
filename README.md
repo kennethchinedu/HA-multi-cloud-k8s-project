@@ -1,2 +1,1 @@
-# HA-multi-cloud-k8s-project
-HA-mult-cloud-k8s-project
+kubectl label namespace <your-namespace> istio-injection=enabled 
