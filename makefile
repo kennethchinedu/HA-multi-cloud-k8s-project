@@ -27,4 +27,6 @@ install-policy-reporter:
 		--namespace policy-reporter \
 		--create-namespace \
 		--set kyvernoPlugin.enabled=true \
-		--set target.slack.minimumSeverity="medium"
+		--set ui.enabled=true \
+		--set service.type=NodePort \
+		--set service.nodePort=32000
