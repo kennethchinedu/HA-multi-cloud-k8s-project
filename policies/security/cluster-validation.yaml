@@ -1,0 +1,107 @@
+---
+# 1. Block images using the :latest tag — unpredictable and not reproducible
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-latest-tag
+  annotations:
+    policies.kyverno.io/title: Disallow Latest Image Tag
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      The :latest tag is mutable and makes it impossible to know exactly
+      which image version is running. All images must be pinned to an
+      explicit tag or digest.
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: check-image-tag
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: "Images must not use the ':latest' tag. Pin to a specific version e.g. myimage:1.2.3"
+        foreach:
+          - list: "request.object.spec.containers"
+            deny:
+              conditions:
+                any:
+                  - key: "{{ element.image }}"
+                    operator: Equals
+                    value: "*:latest"
+                  - key: "{{ element.image }}"
+                    operator: NotContains
+                    value: ":"
+
+---
+# 2. Require all containers to have resource requests and limits set
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-resource-limits
+  annotations:
+    policies.kyverno.io/title: Require Resource Limits
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Without resource limits a single container can consume all node
+      resources, starving other workloads (noisy neighbour problem).
+      All containers must declare requests and limits for CPU and memory.
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: check-resource-limits
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: "All containers must define resources.requests and resources.limits for cpu and memory."
+        pattern:
+          spec:
+            containers:
+              - (name): "*"
+                resources:
+                  requests:
+                    memory: "?*"
+                    cpu: "?*"
+                  limits:
+                    memory: "?*"
+                    cpu: "?*"
+
+---
+# 3. Require specific labels on all Deployments for observability and ownership tracking
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-deployment-labels
+  annotations:
+    policies.kyverno.io/title: Require Deployment Labels
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/severity: low
+    policies.kyverno.io/description: >-
+      Labels are used by monitoring, alerting, and cost attribution tools
+      to identify workloads. All Deployments must have 'app' and 'dev'
+      labels to ensure proper observability and ownership.
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: check-deployment-labels
+      match:
+        any:
+          - resources:
+              kinds:
+                - Deployment
+      validate:
+        message: "Deployments must have both 'app' and 'dev' labels defined."
+        pattern:
+          metadata:
+            labels:
+              app: "?*"
+              dev: "?*"
