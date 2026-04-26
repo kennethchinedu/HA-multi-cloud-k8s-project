@@ -7,7 +7,16 @@ install-helm:
   --values values.yaml
 
 
+install-argocd:
+	cd platform/argocd
+	helm dependency update
+	helm upgrade --install argocd . \
+  --namespace argocd \
+  --create-namespace \
+  --values values.yaml
+
 install-kyverno:
+	cd platform/kyverno
 	helm dependency update
 	helm upgrade --install kyverno . \
   --namespace kyverno \
