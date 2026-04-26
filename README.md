@@ -183,7 +183,7 @@ The Vagrant `private_network` bridges your Mac directly to the VM subnet.
 
 ---
 
-## Roadmap
+## Roadmap 
 
 - [ ] ArgoCD ApplicationSets for GitOps app delivery
 - [ ] Kyverno policies (security, networking, cost)
