@@ -6,11 +6,11 @@ argo-cd:
 
   global:
     # Reduce replica counts to fit the learning cluster resources
-    replicaCount: 1
+    replicaCount: 2
 
   server:
-    replicaCount: 1
-    # Expose ArgoCD UI via NodePort so it's reachable from your Mac
+    replicaCount: 2
+    # Expose ArgoCD UI via NodePort so it's reachable from your machine
     # Access at http://192.168.56.11:30080 (or whichever worker it lands on)
     service:
       type: NodePort
@@ -18,17 +18,17 @@ argo-cd:
       nodePortHttps: 30443
 
   applicationSet:
-    replicaCount: 1
+    replicaCount: 2
 
   controller:
-    replicaCount: 1
+    replicaCount: 2
 
   redis:
     enabled: true
 
-  dex:
-    # Disable SSO/dex for local dev — saves ~100Mi RAM
-    enabled: false
+  # dex:
+  #   # Disable SSO/dex for local dev — saves ~100Mi RAM
+  #   enabled: false
 
   notifications:
     enabled: false

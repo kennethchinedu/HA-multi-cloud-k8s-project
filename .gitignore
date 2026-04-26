@@ -31,6 +31,7 @@ MANIFEST
 CLAUDE.md
 CLAUDE.local.md
 memory/
+text.txt
 
 # PyInstaller
 #   Usually these files are written by a python script from a template

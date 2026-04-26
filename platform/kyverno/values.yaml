@@ -1,0 +1,38 @@
+kyverno:
+  # Admission controller — core component that enforces policies
+  admissionController:
+    replicas: 1
+
+  # Background controller — handles existing resources and generate/mutate rules
+  backgroundController:
+    replicas: 1
+
+  # Cleanup controller — manages TTL-based resource cleanup
+  cleanupController:
+    replicas: 1
+
+  # Reports controller — aggregates policy reports
+  reportsController:
+    replicas: 1
+
+  # Reduce resource footprint for the learning cluster
+  admissionController:
+    container:
+      resources:
+        requests:
+          memory: "128Mi"
+          cpu: "100m"
+        limits:
+          memory: "256Mi"
+          cpu: "500m"
+
+  # Emit policy violation events — useful for learning
+  config:
+    webhooks:
+      - namespaceSelector:
+          matchExpressions:
+            - key: kubernetes.io/metadata.name
+              operator: NotIn
+              values:
+                - kube-system
+                - kyverno

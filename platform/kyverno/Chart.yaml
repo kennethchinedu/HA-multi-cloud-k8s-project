@@ -1,0 +1,11 @@
+apiVersion: v2
+name: kyverno
+description: Kyverno policy engine for the SRE  cluster
+type: application
+version: 0.1.0
+appVersion: "1.13.4"
+
+dependencies:
+  - name: kyverno
+    version: "3.3.4"
+    repository: "https://kyverno.github.io/kyverno/"

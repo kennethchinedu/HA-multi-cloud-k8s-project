@@ -65,3 +65,11 @@ kubeadm join 192.168.56.10:6443 --token nf46ci.zu35f10f1kjq7dmg \
 
 
   git commit -a
+
+
+kubectl get secret argocd-initial-admin-secret \
+  -n argocd \
+  -o jsonpath="{.data.password}" | base64 -d
+
+
+2HoIWsbWtLr-fLBD 
