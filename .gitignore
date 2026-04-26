@@ -25,9 +25,12 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-.claude / 
+# Claude Code — never commit these
+.claude/
 .claude.local.json
 CLAUDE.md
+CLAUDE.local.md
+memory/
 
 # PyInstaller
 #   Usually these files are written by a python script from a template
