@@ -26,13 +26,3 @@ kyverno:
           memory: "256Mi"
           cpu: "500m"
 
-  # Emit policy violation events — useful for learning
-  config:
-    webhooks:
-      - namespaceSelector:
-          matchExpressions:
-            - key: kubernetes.io/metadata.name
-              operator: NotIn
-              values:
-                - kube-system
-                - kyverno
