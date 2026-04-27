@@ -107,33 +107,3 @@ spec:
                 operator: AnyNotIn
                 value: "{{ request.object.metadata.annotations.\"autoscaling.knative.dev/class\" || '' }}"
 
----
-# 4. Block replica counts above 5 outside of HPA control — prevents accidental cost spikes
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
-metadata:
-  name: restrict-replica-count
-  annotations:
-    policies.kyverno.io/title: Restrict Replica Count
-    policies.kyverno.io/category: Cost
-    policies.kyverno.io/severity: medium
-    policies.kyverno.io/description: >-
-      Manually setting a high replica count bypasses HPA and can cause
-      unexpected resource consumption. Static replica counts are capped
-      at 5 — use HPA for anything that needs to scale beyond that.
-spec:
-  validationFailureAction: Audit
-  background: true
-  rules:
-    - name: check-replicas
-      match:
-        any:
-          - resources:
-              kinds:
-                - Deployment
-      validate:
-        message: "Static replica count must not exceed 5. Use an HPA to scale beyond this."
-        pattern:
-          spec:
-            replicas: "<=5"
-

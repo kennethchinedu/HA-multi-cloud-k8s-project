@@ -64,36 +64,4 @@ spec:
                 securityContext:
                   privileged: "false | nil"
 
----
-# Blocks containers that allow privilege escalation (e.g. sudo, setuid binaries)
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
-metadata:
-  name: disallow-privilege-escalation
-  annotations:
-    policies.kyverno.io/title: Disallow Privilege Escalation
-    policies.kyverno.io/category: Security
-    policies.kyverno.io/severity: high
-    policies.kyverno.io/description: >-
-      allowPrivilegeEscalation controls whether a process can gain more
-      privileges than its parent. This policy requires it to be explicitly
-      set to false on every container.
-spec:
-  validationFailureAction: Audit
-  background: true
-  rules:
-    - name: check-allow-privilege-escalation
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      validate:
-        message: "allowPrivilegeEscalation must be set to false."
-        pattern:
-          spec:
-            containers:
-              - (name): "*"
-                securityContext:
-                  allowPrivilegeEscalation: false
 

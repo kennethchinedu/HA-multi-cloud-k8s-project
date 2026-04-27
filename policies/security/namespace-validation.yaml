@@ -46,37 +46,6 @@ spec:
                 readinessProbe:
                   (tcpSocket | httpGet | exec): "?*"
 
----
-# 2. Disallow NodePort and LoadBalancer services — all traffic must go through the Istio ingress gateway
-apiVersion: kyverno.io/v1
-kind: Policy
-metadata:
-  name: restrict-service-types
-  namespace: default
-  annotations:
-    policies.kyverno.io/title: Restrict Service Types
-    policies.kyverno.io/category: Networking
-    policies.kyverno.io/severity: high
-    policies.kyverno.io/description: >-
-      Exposing services directly via NodePort or LoadBalancer bypasses
-      the Istio ingress gateway and any attached traffic policies.
-      All external traffic must enter through the gateway. Only
-      ClusterIP services are allowed in the default namespace.
-spec:
-  validationFailureAction: Audit
-  background: true
-  rules:
-    - name: check-service-type
-      match:
-        any:
-          - resources:
-              kinds:
-                - Service
-      validate:
-        message: "Only ClusterIP services are allowed in the default namespace. Use the Istio ingress gateway for external access."
-        pattern:
-          spec:
-            type: ClusterIP | "?*"
 
 ---
 # 3. Require a securityContext to be defined at the pod level

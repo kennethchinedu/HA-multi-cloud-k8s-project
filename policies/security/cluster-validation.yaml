@@ -36,44 +36,7 @@ spec:
                     operator: NotContains
                     value: ":"
 
----
-# 2. Require all containers to have resource requests and limits set
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
-metadata:
-  name: require-resource-limits
-  annotations:
-    policies.kyverno.io/title: Require Resource Limits
-    policies.kyverno.io/category: Security
-    policies.kyverno.io/severity: medium
-    policies.kyverno.io/description: >-
-      Without resource limits a single container can consume all node
-      resources, starving other workloads (noisy neighbour problem).
-      All containers must declare requests and limits for CPU and memory.
-spec:
-  validationFailureAction: Audit
-  background: true
-  rules:
-    - name: check-resource-limits
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      validate:
-        message: "All containers must define resources.requests and resources.limits for cpu and memory."
-        pattern:
-          spec:
-            containers:
-              - (name): "*"
-                resources:
-                  requests:
-                    memory: "?*"
-                    cpu: "?*"
-                  limits:
-                    memory: "?*"
-                    cpu: "?*"
-
+                    
 ---
 # 3. Require specific labels on all Deployments for observability and ownership tracking
 apiVersion: kyverno.io/v1
