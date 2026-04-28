@@ -1,27 +1,83 @@
+.PHONY: help bootstrap-cluster install-helm install-argocd install-kyverno \
+        install-chaos-mesh install-policy-reporter install-platform \
+        setup-policies deploy-application deploy-gitops-platform deploy-vault deploy-all
+
+# Default target — print usage
+help:
+	@echo ""
+	@echo "Usage: make <target>"
+	@echo ""
+	@echo "Cluster Bootstrap"
+	@echo "  bootstrap-cluster          Start VMs and initialise the control plane"
+	@echo ""
+	@echo "Platform Installation"
+	@echo "  install-helm               Install Helm (Linux/snap)"
+	@echo "  install-argocd             Install ArgoCD via Helm"
+	@echo "  install-kyverno            Install Kyverno via Helm"
+	@echo "  install-chaos-mesh         Install Chaos Mesh via Helm"
+	@echo "  install-policy-reporter    Install Policy Reporter via Helm"
+	@echo "  install-platform           Install all platform tools in order"
+	@echo ""
+	@echo "Policies"
+	@echo "  setup-policies             Apply all Kyverno policies to the cluster"
+	@echo ""
+	@echo "Application"
+	@echo "  deploy-application         Apply ArgoCD project and application for boutique"
+	@echo "  deploy-gitops-platform     Apply ArgoCD project and application for Kyverno"
+	@echo "  deploy-vault               Apply ArgoCD project and application for Vault"
+	@echo "  deploy-all                 Deploy all ArgoCD apps"
+	@echo ""
+
+# ── Cluster Bootstrap ──────────────────────────────────────────────────────────
+
+bootstrap-cluster:
+	cd bootstrap && vagrant up && \
+	vagrant ssh sre-control-plane -- "sudo bash /vagrant/bootstrap_control_local.sh 192.168.56.10 192.168.0.0/16"
+
+# After bootstrap-cluster, get the join command from the control plane output,
+# then run:
+#   make join-worker TOKEN=<token> HASH=sha256:<hash>
+join-worker:
+	@if [ -z "$(TOKEN)" ] || [ -z "$(HASH)" ]; then \
+		echo "ERROR: TOKEN and HASH are required."; \
+		echo "Usage: make join-worker TOKEN=ddh40g.lg4uj8iyaknctrsv HASH=sha256:sha256:e7d7c82410bc10d191d56ddc79c9d8130cfab9290767facbc53f52832bca5b1e"; \
+		exit 1; \
+	fi
+	cd bootstrap && \
+	vagrant ssh sre-worker-1 -- "sudo bash /vagrant/bootstrap_worker_local.sh 192.168.56.10 $(TOKEN) $(HASH)" && \
+	vagrant ssh sre-worker-2 -- "sudo bash /vagrant/bootstrap_worker_local.sh 192.168.56.10 $(TOKEN) $(HASH)"
+
+# ── Platform Installation ──────────────────────────────────────────────────────
+
 install-helm:
 	sudo snap install helm --classic
 
 install-argocd:
-	cd platform/argocd && helm dependency update && helm upgrade --install argocd . \
+	cd platform/argocd && \
+	helm dependency update && \
+	helm upgrade --install argocd . \
 		--namespace argocd \
 		--create-namespace \
 		--values values.yaml
 
 install-kyverno:
-	cd platform/kyverno && helm dependency update && helm upgrade --install kyverno . \
+	cd platform/kyverno && \
+	helm dependency update && \
+	helm upgrade --install kyverno . \
 		--namespace kyverno \
 		--create-namespace \
 		--values values.yaml
 
 install-chaos-mesh:
-	cd platform/chaos-mesh && helm dependency update && helm upgrade --install chaos-mesh . \
+	cd platform/chaos-mesh && \
+	helm dependency update && \
+	helm upgrade --install chaos-mesh . \
 		--namespace chaos-mesh \
 		--create-namespace \
 		--values values.yaml
 
-
 install-policy-reporter:
-	helm repo add policy-reporter https://kyverno.github.io/policy-reporter && \
+	helm repo add policy-reporter https://kyverno.github.io/policy-reporter || true && \
 	helm repo update && \
 	helm upgrade --install policy-reporter policy-reporter/policy-reporter \
 		--namespace policy-reporter \
@@ -30,3 +86,28 @@ install-policy-reporter:
 		--set ui.enabled=true \
 		--set service.type=NodePort \
 		--set service.nodePort=32000
+
+install-platform: install-argocd install-kyverno install-chaos-mesh install-policy-reporter
+	@echo "All platform tools installed."
+
+# ── Policies ───────────────────────────────────────────────────────────────────
+
+setup-policies:
+	kubectl apply -f policies/security/ -f policies/networking/ -f policies/cost/ -f policies/mutations/
+
+# ── Application Deployment ─────────────────────────────────────────────────────
+
+# deploy-application:
+# 	kubectl apply -f gitops/project/boutique-project.yaml && \
+# 	kubectl apply -f gitops/apps/applications/boutique-app.yaml
+
+# deploy-gitops-platform:
+# 	kubectl apply -f gitops/project/kyverno-project.yaml && \
+# 	kubectl apply -f gitops/apps/platform/kyverno-app.yaml
+
+# deploy-vault:
+# 	kubectl apply -f gitops/project/vault-project.yaml && \
+	kubectl apply -f gitops/apps/platform/vault-app.yaml
+
+deploy-all: deploy-gitops-platform deploy-vault deploy-application
+	@echo "All ArgoCD apps deployed."

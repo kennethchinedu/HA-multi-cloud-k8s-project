@@ -8,7 +8,7 @@ A hands-on SRE project that deploys Google's [Online Boutique](https://github.co
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                  Your Mac (Host)                     │
+│                  Your Host                     │
 │  kubectl  ──►  127.0.0.1:6443                        │
 │  Browser  ──►  192.168.56.11:30080 (ArgoCD UI)       │
 └────────────────────┬────────────────────────────────┘

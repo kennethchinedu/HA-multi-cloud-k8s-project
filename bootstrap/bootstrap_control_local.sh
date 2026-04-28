@@ -6,9 +6,9 @@
 
 set -euo pipefail
 
-# -----------------------------------------------------------------------------
+
 # Inputs
-# -----------------------------------------------------------------------------
+
 if [[ $# -lt 2 ]]; then
   echo "Usage: sudo bash $0 <control_plane_ip> <pod_network_cidr>"
   echo "Example: sudo bash $0 192.168.56.10 192.168.0.0/16"
@@ -21,9 +21,9 @@ POD_NETWORK_CIDR="$2"
 echo "==> Control plane IP : $CONTROL_PLANE_IP"
 echo "==> Pod network CIDR : $POD_NETWORK_CIDR"
 
-# -----------------------------------------------------------------------------
-# Section 1 — Pre-requisites
-# -----------------------------------------------------------------------------
+
+#  Pre-requisites
+
 echo "==> [1/6] Applying pre-requisites..."
 
 swapoff -a
@@ -45,16 +45,16 @@ EOF
 
 sysctl --system
 
-# -----------------------------------------------------------------------------
-# Section 2 — Install containerd
-# -----------------------------------------------------------------------------
+
+#— Install containerd
+
 echo "==> [2/6] Installing containerd..."
 
 apt-get update -qq
 apt-get install -y ca-certificates curl gnupg lsb-release
 
 install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --batch --yes --dearmor -o /etc/apt/keyrings/docker.gpg
 chmod a+r /etc/apt/keyrings/docker.gpg
 
 echo \
@@ -71,15 +71,15 @@ sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.to
 systemctl restart containerd
 systemctl enable containerd
 
-# -----------------------------------------------------------------------------
+
 # Section 3 — Install kubeadm, kubelet, kubectl
-# -----------------------------------------------------------------------------
+
 echo "==> [3/6] Installing kubeadm, kubelet, kubectl..."
 
 apt-get install -y apt-transport-https
 
 curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | \
-  gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  gpg --batch --yes --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
 echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /' | \
   tee /etc/apt/sources.list.d/kubernetes.list
@@ -90,10 +90,25 @@ apt-mark hold kubelet kubeadm kubectl
 
 systemctl enable kubelet
 
-# -----------------------------------------------------------------------------
+
 # Section 4 — Initialise control plane
-# -----------------------------------------------------------------------------
+
 echo "==> [4/6] Initialising control plane..."
+
+if [ -f /etc/kubernetes/admin.conf ]; then
+  echo "==> Existing cluster detected — resetting before reinitialising..."
+  kubeadm reset -f
+  rm -rf /etc/cni/net.d /var/lib/etcd "$HOME/.kube"
+  iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
+fi
+
+echo "==> Ensuring containerd is running..."
+systemctl restart containerd
+until [ -S /run/containerd/containerd.sock ]; do
+  echo "   waiting for containerd socket..."
+  sleep 2
+done
+echo "==> containerd is ready."
 
 kubeadm init \
   --apiserver-advertise-address="$CONTROL_PLANE_IP" \
@@ -104,9 +119,9 @@ mkdir -p "$HOME/.kube"
 cp -i /etc/kubernetes/admin.conf "$HOME/.kube/config"
 chown "$(id -u):$(id -g)" "$HOME/.kube/config"
 
-# -----------------------------------------------------------------------------
-# Section 5 — Install Calico CNI
-# -----------------------------------------------------------------------------
+
+#  Install Calico CNI
+
 echo "==> [5/6] Installing Calico CNI..."
 
 kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.27.3/manifests/tigera-operator.yaml
@@ -115,16 +130,16 @@ kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.27.3
 echo "==> Waiting for Calico pods to become Ready..."
 kubectl wait --for=condition=Ready pods --all -n calico-system --timeout=180s
 
-# -----------------------------------------------------------------------------
+
 # Section 6 — Label control plane node
-# -----------------------------------------------------------------------------
+
 echo "==> [6/7] Labelling control plane node..."
 kubectl label node "$(hostname)" node=control
 echo "==> Node labelled as node=control."
 
-# -----------------------------------------------------------------------------
+
 # Section 7 — Print join command for workers
-# -----------------------------------------------------------------------------
+
 echo "==> [7/7] Cluster ready. Run this command on each worker node:"
 echo ""
 kubeadm token create --print-join-command

@@ -63,7 +63,7 @@ apt-get update -qq
 apt-get install -y ca-certificates curl gnupg lsb-release
 
 install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --batch --yes --dearmor -o /etc/apt/keyrings/docker.gpg
 chmod a+r /etc/apt/keyrings/docker.gpg
 
 echo \
@@ -88,7 +88,7 @@ echo "==> [3/4] Installing kubeadm, kubelet, kubectl..."
 apt-get install -y apt-transport-https
 
 curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | \
-  gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  gpg --batch --yes --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
 echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /' | \
   tee /etc/apt/sources.list.d/kubernetes.list
@@ -103,6 +103,21 @@ systemctl enable kubelet
 # Section 4 — Join the cluster
 # -----------------------------------------------------------------------------
 echo "==> [4/4] Joining the cluster..."
+
+if [ -f /etc/kubernetes/kubelet.conf ]; then
+  echo "==> Node already joined — resetting before rejoining..."
+  kubeadm reset -f
+  rm -rf /etc/cni/net.d "$HOME/.kube"
+  iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
+fi
+
+echo "==> Ensuring containerd is running..."
+systemctl restart containerd
+until [ -S /run/containerd/containerd.sock ]; do
+  echo "   waiting for containerd socket..."
+  sleep 2
+done
+echo "==> containerd is ready."
 
 kubeadm join "${CONTROL_PLANE_IP}:6443" \
   --token "${JOIN_TOKEN}" \
