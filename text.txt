@@ -51,15 +51,23 @@ https://kyverno.io/docs/policy-types/overview/
 Use secrets, Configmap, 
 
 
+kubeadm join 192.168.56.10:6443 --token xmo2e8.pzq792fmgz8z09xr \
+	--discovery-token-ca-cert-hash sha256:34039642febbab4642243585e28544fb62e32c5142ef3415ef3517b330e9fd1e 
 
 
 
 
 
 
-kubeadm join 192.168.56.10:6443 --token ddh40g.lg4uj8iyaknctrsv \
-	--discovery-token-ca-cert-hash sha256:e7d7c82410bc10d191d56ddc79c9d8130cfab9290767facbc53f52832bca5b1e 
 
+
+ On each worker node:                                                                                                                                                      
+   
+  kubeadm reset -f --cri-socket=unix:///run/containerd/containerd.sock                                                                                                      
+  rm -rf /etc/cni/net.d /var/lib/kubelet
+
+
+  git commit -a
 
 
 kubectl get secret argocd-initial-admin-secret \

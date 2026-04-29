@@ -96,13 +96,13 @@ setup-policies:
 
 #  Application Deployment 
 
-# deploy-application:
-# 	kubectl apply -f gitops/project/boutique-project.yaml && \
-# 	kubectl apply -f gitops/apps/applications/boutique-app.yaml
+deploy-application:
+	kubectl apply -f gitops/project/boutique-project.yaml && \
+	kubectl apply -f gitops/apps/applications/boutique-app.yaml
 
-# deploy-gitops-platform:
-# 	kubectl apply -f gitops/project/kyverno-project.yaml && \
-# 	kubectl apply -f gitops/apps/platform/kyverno-app.yaml
+deploy-gitops-platform:
+	kubectl apply -f gitops/project/kyverno-project.yaml && \
+	kubectl apply -f gitops/apps/platform/kyverno-app.yaml
 
 # deploy-vault:
 # 	kubectl apply -f gitops/project/vault-project.yaml && \

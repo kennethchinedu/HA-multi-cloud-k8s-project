@@ -28,13 +28,13 @@ spec:
         - name: frontend
           image: anamskenneth/frontend:2025-07-24
           imagePullPolicy: IfNotPresent
-          resources:
-            requests:
-              memory: "64Mi"
-              cpu: "50m"
-            limits:
-              memory: "256Mi"
-              cpu: "300m"
+          # resources:
+            # requests:
+              # memory: "64Mi"
+              # cpu: "50m"
+            # limits:
+              # memory: "256Mi"
+              # cpu: "300m"
           env:
             - name: PORT
               value: "8080"
@@ -105,13 +105,13 @@ spec:
         - name: product-catalog
           image: anamskenneth/productcatalogservice:2025-07-24
           imagePullPolicy: IfNotPresent
-          resources:
-            requests:
-              memory: "64Mi"
-              cpu: "50m"
-            limits:
-              memory: "256Mi"
-              cpu: "300m"
+          # resources:
+            # requests:
+              # memory: "64Mi"
+              # cpu: "50m"
+            # limits:
+              # memory: "256Mi"
+              # cpu: "300m"
           env:
             - name: PORT
               value: "3550"
@@ -168,13 +168,13 @@ spec:
         - name: cartservice
           image: anamskenneth/cartservice:2025-07-24
           imagePullPolicy: IfNotPresent
-          resources:
-            requests:
-              memory: "64Mi"
-              cpu: "50m"
-            limits:
-              memory: "256Mi"
-              cpu: "300m"
+          # resources:
+            # requests:
+              # memory: "64Mi"
+              # cpu: "50m"
+            # limits:
+              # memory: "256Mi"
+              # cpu: "300m"
           env:
             - name: PORT
               value: "7070"
@@ -231,13 +231,13 @@ spec:
         - name: emailapp
           image: anamskenneth/emailservice:2025-07-24
           imagePullPolicy: IfNotPresent
-          resources:
-            requests:
-              memory: "64Mi"
-              cpu: "50m"
-            limits:
-              memory: "256Mi"
-              cpu: "300m"
+          # resources:
+            # requests:
+              # memory: "64Mi"
+              # cpu: "50m"
+            # limits:
+              # memory: "256Mi"
+              # cpu: "300m"
           env:
             - name: PORT
               value: "8080"
@@ -295,13 +295,13 @@ spec:
         - name: checkout
           image: anamskenneth/checkoutservice:2025-07-24
           imagePullPolicy: IfNotPresent
-          resources:
-            requests:
-              memory: "64Mi"
-              cpu: "50m"
-            limits:
-              memory: "256Mi"
-              cpu: "300m"
+          # resources:
+            # requests:
+              # memory: "64Mi"
+              # cpu: "50m"
+            # limits:
+              # memory: "256Mi"
+              # cpu: "300m"
           env:
             - name: PORT
               value: "5050"
@@ -381,13 +381,13 @@ spec:
         - name: recommendationservice
           image: anamskenneth/recommendationservice:2025-07-24
           imagePullPolicy: IfNotPresent
-          resources:
-            requests:
-              memory: "64Mi"
-              cpu: "50m"
-            limits:
-              memory: "256Mi"
-              cpu: "300m"
+          # resources:
+            # requests:
+              # memory: "64Mi"
+              # cpu: "50m"
+            # limits:
+              # memory: "256Mi"
+              # cpu: "300m"
           env:
             - name: PORT
               value: "8080"
@@ -447,13 +447,13 @@ spec:
         - name: currency-app
           image: anamskenneth/currencyservice:2025-07-24
           imagePullPolicy: IfNotPresent
-          resources:
-            requests:
-              memory: "64Mi"
-              cpu: "50m"
-            limits:
-              memory: "256Mi"
-              cpu: "300m"
+          # resources:
+            # requests:
+              # memory: "64Mi"
+              # cpu: "50m"
+            # limits:
+              # memory: "256Mi"
+              # cpu: "300m"
           env:
             - name: PORT
               value: "7000"
@@ -515,13 +515,13 @@ spec:
         - name: ads-app
           image: anamskenneth/adservice:2025-07-24
           imagePullPolicy: IfNotPresent
-          resources:
-            requests:
-              memory: "64Mi"
-              cpu: "50m"
-            limits:
-              memory: "256Mi"
-              cpu: "300m"
+          # resources:
+            # requests:
+              # memory: "64Mi"
+              # cpu: "50m"
+            # limits:
+              # memory: "256Mi"
+              # cpu: "300m"
           env:
             - name: PORT
               value: "9555"
@@ -579,13 +579,13 @@ spec:
         - name: shipping-app
           image: anamskenneth/shippingservice:2025-07-24
           imagePullPolicy: IfNotPresent
-          resources:
-            requests:
-              memory: "64Mi"
-              cpu: "50m"
-            limits:
-              memory: "256Mi"
-              cpu: "300m"
+          # resources:
+            # requests:
+              # memory: "64Mi"
+              # cpu: "50m"
+            # limits:
+              # memory: "256Mi"
+              # cpu: "300m"
           env:
             - name: PORT
               value: "50051"
@@ -643,13 +643,13 @@ spec:
         - name: paymentservice
           image: anamskenneth/paymentservice:2025-07-24
           imagePullPolicy: IfNotPresent
-          resources:
-            requests:
-              memory: "64Mi"
-              cpu: "50m"
-            limits:
-              memory: "256Mi"
-              cpu: "300m"
+          # resources:
+            # requests:
+              # memory: "64Mi"
+              # cpu: "50m"
+            # limits:
+              # memory: "256Mi"
+              # cpu: "300m"
           env:
             - name: PORT
               value: "5000"
@@ -725,13 +725,13 @@ spec:
           volumeMounts:
             - mountPath: /data
               name: redis-data
-          resources:
-            requests:
-              memory: "64Mi"
-              cpu: "50m"
-            limits:
-              memory: "256Mi"
-              cpu: "300m"
+          # resources:
+            # requests:
+              # memory: "64Mi"
+              # cpu: "50m"
+            # limits:
+              # memory: "256Mi"
+              # cpu: "300m"
       volumes:
         - name: redis-data
           emptyDir: {}
