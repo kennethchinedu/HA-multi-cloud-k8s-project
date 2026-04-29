@@ -28,7 +28,7 @@ help:
 	@echo "  deploy-all                 Deploy all ArgoCD apps"
 	@echo ""
 
-# ── Cluster Bootstrap ──────────────────────────────────────────────────────────
+#  Cluster Bootstrap 
 
 bootstrap-cluster:
 	cd bootstrap && vagrant up && \
@@ -40,15 +40,14 @@ bootstrap-cluster:
 join-worker:
 	@if [ -z "$(TOKEN)" ] || [ -z "$(HASH)" ]; then \
 		echo "ERROR: TOKEN and HASH are required."; \
-		echo "Usage: make join-worker TOKEN=ddh40g.lg4uj8iyaknctrsv HASH=sha256:sha256:e7d7c82410bc10d191d56ddc79c9d8130cfab9290767facbc53f52832bca5b1e"; \
+		echo "Usage: make join-worker TOKEN=xmo2e8.pzq792fmgz8z09xr HASH=sha256:34039642febbab4642243585e28544fb62e32c5142ef3415ef3517b330e9fd1e"; \
 		exit 1; \
 	fi
 	cd bootstrap && \
 	vagrant ssh sre-worker-1 -- "sudo bash /vagrant/bootstrap_worker_local.sh 192.168.56.10 $(TOKEN) $(HASH)" && \
 	vagrant ssh sre-worker-2 -- "sudo bash /vagrant/bootstrap_worker_local.sh 192.168.56.10 $(TOKEN) $(HASH)"
 
-# ── Platform Installation ──────────────────────────────────────────────────────
-
+# Platform Installation
 install-helm:
 	sudo snap install helm --classic
 
@@ -90,12 +89,12 @@ install-policy-reporter:
 install-platform: install-argocd install-kyverno install-chaos-mesh install-policy-reporter
 	@echo "All platform tools installed."
 
-# ── Policies ───────────────────────────────────────────────────────────────────
+# Policies 
 
 setup-policies:
 	kubectl apply -f policies/security/ -f policies/networking/ -f policies/cost/ -f policies/mutations/
 
-# ── Application Deployment ─────────────────────────────────────────────────────
+#  Application Deployment 
 
 # deploy-application:
 # 	kubectl apply -f gitops/project/boutique-project.yaml && \
