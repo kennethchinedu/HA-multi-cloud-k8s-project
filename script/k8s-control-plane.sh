@@ -1,19 +1,7 @@
 #!/bin/bash
-# =============================================================================
-# Kubernetes Control Plane Setup with Calico CNI
-# Ubuntu 22.04 (jammy) — run this ONLY on the control plane node
-#
-# References:
-#   - Kubernetes install: https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
-#   - kubeadm init:       https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-init/
-#   - Calico install:     https://docs.tigera.io/calico/latest/getting-started/kubernetes/quickstart
-#   - Calico manifest:    https://raw.githubusercontent.com/projectcalico/calico/v3.27.3/manifests/calico.yaml
-# =============================================================================
+# run this ONLY on the control plane node
 
 
-# =============================================================================
-# SECTION 1 — PRE-REQUISITES
-# =============================================================================
 
 swapoff -a
 sed -i '/ swap / s/^/#/' /etc/fstab
@@ -35,9 +23,8 @@ EOF
 sysctl --system
 
 
-# =============================================================================
-# SECTION 2 — INSTALL CONTAINERD
-# =============================================================================
+# INSTALL CONTAINERD
+
 
 apt-get update
 apt-get install -y ca-certificates curl gnupg lsb-release
@@ -61,9 +48,7 @@ systemctl restart containerd
 systemctl enable containerd
 
 
-# =============================================================================
-# SECTION 3 — INSTALL kubeadm, kubelet, kubectl
-# =============================================================================
+# INSTALL kubeadm, kubelet, kubectl
 
 apt-get install -y apt-transport-https
 
@@ -80,9 +65,7 @@ apt-mark hold kubelet kubeadm kubectl
 systemctl enable kubelet
 
 
-# =============================================================================
-# SECTION 4 — INITIALISE CONTROL PLANE
-# =============================================================================
+# INITIALISE CONTROL PLANE
 
 # --pod-network-cidr must match Calico's default (192.168.0.0/16)
 kubeadm init \
@@ -95,29 +78,22 @@ cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 chown $(id -u):$(id -g) $HOME/.kube/config
 
 
-# =============================================================================
-# SECTION 5 — INSTALL CALICO CNI
-# =============================================================================
+# INSTALL CALICO CNI
 
 kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.27.3/manifests/tigera-operator.yaml
-
 kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.27.3/manifests/custom-resources.yaml
 
 # Wait until all Calico pods are Running before joining workers
 watch kubectl get pods -n calico-system
 
 
-# =============================================================================
-# SECTION 6 — GENERATE JOIN COMMAND FOR WORKERS
-# =============================================================================
+# GENERATE JOIN COMMAND FOR WORKERS
 
 # Copy the output of this command and run it on each worker node
 kubeadm token create --print-join-command
 
 
-# =============================================================================
-# SECTION 7 — VERIFY CLUSTER
-# =============================================================================
+# VERIFY CLUSTER
 
 kubectl get nodes -o wide
 kubectl get pods -A

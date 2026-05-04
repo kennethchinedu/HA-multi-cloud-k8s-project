@@ -1,17 +1,7 @@
 #!/bin/bash
-# =============================================================================
+
 # Kubernetes Worker Node Setup
-# Ubuntu 22.04 (jammy) — run this on EACH worker node (worker-1, worker-2, worker-3)
-#
-# References:
-#   - Kubernetes install: https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
-#   - kubeadm join:       https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-join/
-# =============================================================================
 
-
-# =============================================================================
-# SECTION 1 — PRE-REQUISITES
-# =============================================================================
 
 swapoff -a
 sed -i '/ swap / s/^/#/' /etc/fstab
@@ -33,9 +23,7 @@ EOF
 sysctl --system
 
 
-# =============================================================================
-# SECTION 2 — INSTALL CONTAINERD
-# =============================================================================
+# INSTALL CONTAINERD
 
 apt-get update
 apt-get install -y ca-certificates curl gnupg lsb-release
@@ -59,9 +47,7 @@ systemctl restart containerd
 systemctl enable containerd
 
 
-# =============================================================================
-# SECTION 3 — INSTALL kubeadm, kubelet, kubectl
-# =============================================================================
+# INSTALL kubeadm, kubelet, kubectl
 
 apt-get install -y apt-transport-https
 
@@ -78,9 +64,7 @@ apt-mark hold kubelet kubeadm kubectl
 systemctl enable kubelet
 
 
-# =============================================================================
-# SECTION 4 — JOIN THE CLUSTER
-# =============================================================================
+# JOIN THE CLUSTER
 
 # Replace <token> and <hash> with the output from:
 #   kubeadm token create --print-join-command   (run on the control plane)
