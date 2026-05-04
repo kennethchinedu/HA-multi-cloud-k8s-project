@@ -13,6 +13,7 @@ help:
 	@echo "Platform Installation"
 	@echo "  install-helm               Install Helm (Linux/snap)"
 	@echo "  install-argocd             Install ArgoCD via Helm"
+	@echo "  install-argocd-rollout     Install ArgoCD Rollouts via cli"
 	@echo "  install-kyverno            Install Kyverno via Helm"
 	@echo "  install-chaos-mesh         Install Chaos Mesh via Helm"
 	@echo "  install-policy-reporter    Install Policy Reporter via Helm"
@@ -59,6 +60,11 @@ install-argocd:
 		--create-namespace \
 		--values values.yaml
 
+install-argocd-rollout:
+	kubectl create namespace argo-rollouts
+	kubectl apply -n argo-rollouts -f https://github.com/argoproj/argo-rollouts/releases/latest/download/install.yaml
+
+
 install-kyverno:
 	cd platform/kyverno && \
 	helm dependency update && \
@@ -92,7 +98,7 @@ install-platform: install-argocd install-kyverno install-chaos-mesh install-poli
 # Policies 
 
 setup-policies:
-	kubectl apply -f policies/security/ -f policies/networking/ -f policies/cost/ -f policies/mutations/
+	kubectl apply -f policies/security/ -f policies/cost/ -f policies/mutations/
 
 #  Application Deployment 
 
@@ -100,9 +106,9 @@ deploy-application:
 	kubectl apply -f gitops/project/boutique-project.yaml && \
 	kubectl apply -f gitops/apps/applications/boutique-app.yaml
 
-deploy-gitops-platform:
-	kubectl apply -f gitops/project/kyverno-project.yaml && \
-	kubectl apply -f gitops/apps/platform/kyverno-app.yaml
+# deploy-gitops-platform:
+# 	kubectl apply -f gitops/project/kyverno-project.yaml && \
+# 	kubectl apply -f gitops/apps/platform/kyverno-app.yaml
 
 # deploy-vault:
 # 	kubectl apply -f gitops/project/vault-project.yaml && \

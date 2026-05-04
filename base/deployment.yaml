@@ -6,6 +6,7 @@ metadata:
   labels:
     app: frontend-app
     dev: frontend
+    team: devops
 spec:
   selector:
     matchLabels:
@@ -83,6 +84,7 @@ metadata:
   labels:
     app: product-catalog-app
     dev: productcatalog
+    team: devops
 spec:
   selector:
     matchLabels:
@@ -146,6 +148,7 @@ metadata:
   labels:
     app: cart-app
     dev: cartservice
+    team: devops
 spec:
   selector:
     matchLabels:
@@ -211,6 +214,7 @@ metadata:
   labels:
     app: email-app
     dev: emailapp
+    team: devops
 spec:
   selector:
     matchLabels:
@@ -272,6 +276,7 @@ metadata:
   labels:
     app: checkout-app
     dev: checkoutservice
+    team: devops
 spec:
   selector:
     matchLabels:
@@ -358,6 +363,7 @@ metadata:
   labels:
     app: recommendation-app
     dev: recommendationservice
+    team: devops
 spec:
   selector:
     matchLabels:
@@ -424,7 +430,8 @@ metadata:
   labels:
     app: currency-app
     dev: currencyservice
-spec:
+    team: devops
+  spec:
   selector:
     matchLabels:
       app: currency-app

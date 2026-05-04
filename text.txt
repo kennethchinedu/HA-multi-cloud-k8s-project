@@ -75,4 +75,23 @@ kubectl get secret argocd-initial-admin-secret \
   -o jsonpath="{.data.password}" | base64 -d
 
 
-2HoIWsbWtLr-fLBD 
+HspicSSDjBW1GEuB
+
+
+                    ┌──────────────┐
+                    │   DNS Layer  │
+                    │ (Failover)   │
+                    └──────┬───────┘
+                           │
+        ┌──────────────────┼──────────────────┐
+        │                  │                  │
+ ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+ │ AWS Cluster  │  │ GCP Cluster  │  │ Local Cluster│
+ │ (Primary)    │  │ (Secondary)  │  │ (Fallback)   │
+ └──────┬───────┘  └──────┬───────┘  └──────┬───────┘
+        │                  │                  │
+     Istio              Istio              Istio
+        │                  │                  │
+     App v1             App v1             App v1
+
+             
