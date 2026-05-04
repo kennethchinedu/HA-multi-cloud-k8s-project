@@ -95,3 +95,31 @@ HspicSSDjBW1GEuB
      App v1             App v1             App v1
 
              
+| Phase                  | Task ID | Task                         | Description                                                       | Expected Outcome                    |
+| ---------------------- | ------- | ---------------------------- | ----------------------------------------------------------------- | ----------------------------------- |
+| **Foundation**         | 1       | Add second cloud             | Extend `infra/` to provision AWS + another cloud (e.g. GCP/Azure) | Two independent Kubernetes clusters |
+|                        | 2       | Register clusters in Argo CD | Add all clusters (AWS, second cloud, local) to Argo CD            | Central GitOps control plane        |
+|                        | 3       | Multi-cluster GitOps         | Use ApplicationSet to deploy apps to all clusters                 | Same app runs in all clusters       |
+| **Traffic Layer**      | 4       | Global DNS failover          | Configure DNS (Route53/Cloudflare) with health checks             | Traffic can shift between clusters  |
+|                        | 5       | Expose services              | Create LoadBalancer/Ingress per cluster                           | Each cluster accessible externally  |
+| **Failover**           | 6       | Simulate failure             | Kill primary (AWS) cluster                                        | Traffic shifts automatically        |
+|                        | 7       | Recovery test                | Restore AWS cluster                                               | Traffic returns to primary          |
+| **Service Mesh**       | 8       | Install Istio                | Deploy Istio on all clusters                                      | Unified service mesh layer          |
+|                        | 9       | Cross-cluster comms          | Configure east-west gateway + secrets                             | Services talk across clusters       |
+|                        | 10      | Traffic splitting            | Route traffic between clusters (e.g. 80/20)                       | Multi-cluster canary/failover       |
+| **Security & Secrets** | 11      | Centralize secrets           | Deploy HashiCorp Vault                                            | Shared secret management            |
+|                        | 12      | Enforce policies             | Apply Kyverno across clusters                                     | Consistent governance               |
+| **Observability**      | 13      | Monitoring stack             | Add Prometheus, Grafana, Loki                                     | Metrics, logs, dashboards           |
+|                        | 14      | Cross-cluster dashboards     | Show traffic, latency, failovers                                  | Visibility into system health       |
+| **Chaos Engineering**  | 15      | Inject failures              | Use Chaos Mesh to kill pods/nodes/network                         | Validate resilience                 |
+| **CI/CD**              | 16      | Multi-cluster promotion      | Deploy Local → Secondary → Primary                                | Progressive rollout pipeline        |
+| **Documentation**      | 17      | Architecture doc             | Document topology, failover, tradeoffs                            | Clear portfolio narrative           |
+
+
+
+| Task                        | Description                       | Impact                     |
+| --------------------------- | --------------------------------- | -------------------------- |
+| Add latency-based routing   | Route users to nearest cluster    | Real-world global system   |
+| Add failback delay          | Prevent flapping between clusters | Production-grade stability |
+| Add SLO/alerting            | Define uptime/error thresholds    | Reliability engineering    |
+| Build `make create-service` | Self-service onboarding           | True platform engineering  |
